@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.URL;
 import java.util.Map;
 
-import org.junit.internal.AssumptionViolatedException;
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
@@ -50,14 +49,13 @@ public class CasperJSTestCase {
 				executor.pipeOut(out);
 				executor.pipeOut(System.out);
 				String fileName = path.replaceAll(".*\\/(.*)", "$1");
-				int result = executor.executeCasper(path, "test", new File(path).getAbsolutePath(), "--fail-fast=true");
+				int result = executor.executeCasper(path, "test", new File(path).getAbsolutePath());
 				if (result == 0) {
-					notifier.fireTestFinished(description);
 					return;
 				}
 
 				String msg = readMessage(out);
-				AssumptionViolatedException ex = new AssumptionViolatedException(msg);
+				Throwable ex = new AssertionError(msg);
 				notifier.fireTestFailure(new Failure(description, ex));
 
 			} catch (Exception ex) {
